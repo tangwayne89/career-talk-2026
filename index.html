@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>填完志願之後的事 — Wayne Tang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══ RESET ═══ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ═══ VARIABLES ═══ */
+:root {
+  --bg:           #09090f;
+  --bg-card:      rgba(255,255,255,0.045);
+  --accent:       #8b5cf6;
+  --accent-glow:  rgba(139,92,246,0.18);
+  --accent2:      #06b6d4;
+  --accent2-glow: rgba(6,182,212,0.18);
+  --warm:         #f59e0b;
+  --warm-glow:    rgba(245,158,11,0.18);
+  --green:        #10b981;
+  --rose:         #f43f5e;
+  --text:         #f8fafc;
+  --text-muted:   #94a3b8;
+  --text-dim:     #475569;
+  --border:       rgba(255,255,255,0.08);
+  --border-v:     rgba(139,92,246,0.22);
+  --font-d:       'Manrope', 'Noto Sans TC', sans-serif;
+  --font-b:       'Inter', 'Noto Sans TC', sans-serif;
+  --font-s:       'Noto Serif TC', serif;
+}
+
+/* ═══ BASE ═══ */
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══ SLIDE SYSTEM ═══ */
+.deck { width: 100vw; height: 100vh; position: relative; }
+.slide {
+  position: absolute; inset: 0;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.38s ease;
+  overflow: hidden;
+}
+.slide.active { opacity: 1; pointer-events: all; }
+
+/* ═══ NAV ═══ */
+.nav {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(9,9,15,0.85); backdrop-filter: blur(16px);
+  border: 1px solid var(--border); border-radius: 40px;
+  padding: 9px 18px; z-index: 1000;
+}
+.nav-btn {
+  background: none; border: none; color: var(--accent);
+  font-size: 15px; cursor: pointer; padding: 3px 7px;
+  transition: opacity 0.2s; line-height: 1;
+}
+.nav-btn:hover { opacity: 0.65; }
+.nav-btn:disabled { opacity: 0.2; cursor: default; }
+.nav-counter {
+  font-family: 'Inter', monospace; font-size: 10px;
+  color: var(--text-muted); letter-spacing: 2px;
+  min-width: 38px; text-align: center;
+}
+.nav-dots { display: flex; gap: 4px; align-items: center; }
+.nav-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(255,255,255,0.18); cursor: pointer;
+  transition: all 0.28s;
+}
+.nav-dot.active { background: var(--accent); width: 14px; border-radius: 3px; }
+.key-hint {
+  position: fixed; top: 14px; right: 18px;
+  font-size: 10px; color: rgba(255,255,255,0.18);
+  letter-spacing: 2px; z-index: 1000;
+  font-family: 'Inter', monospace;
+}
+
+/* ═══ LAYOUT ═══ */
+.slide-inner {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  justify-content: center; padding: 52px 76px;
+  position: relative; z-index: 1;
+}
+.slide-inner.top {
+  justify-content: flex-start; padding-top: 58px; padding-bottom: 96px;
+}
+
+/* ═══ BACKGROUNDS ═══ */
+.grid-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(139,92,246,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.035) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.glow { position: absolute; border-radius: 50%; pointer-events: none; }
+
+/* ═══ TYPOGRAPHY ═══ */
+.eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 4px;
+  text-transform: uppercase; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content: ''; width: 22px; height: 1px; flex-shrink: 0; }
+.eb-v  { color: var(--accent);  } .eb-v::before  { background: var(--accent);  }
+.eb-c  { color: var(--accent2); } .eb-c::before  { background: var(--accent2); }
+.eb-w  { color: var(--warm);    } .eb-w::before  { background: var(--warm);    }
+.eb-g  { color: var(--green);   } .eb-g::before  { background: var(--green);   }
+.eb-r  { color: var(--rose);    } .eb-r::before  { background: var(--rose);    }
+
+.h-xl {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: clamp(48px, 7.5vw, 88px); line-height: 1.0;
+  letter-spacing: -1.5px; color: var(--text); margin-bottom: 14px;
+}
+.h-lg {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: clamp(30px, 4.5vw, 52px); line-height: 1.1;
+  letter-spacing: -0.5px; color: var(--text); margin-bottom: 10px;
+}
+.h-md {
+  font-family: var(--font-d); font-weight: 700;
+  font-size: clamp(20px, 2.8vw, 32px); line-height: 1.2;
+  color: var(--text); margin-bottom: 8px;
+}
+.lead {
+  font-family: var(--font-s); font-size: 15px;
+  color: var(--text-muted); line-height: 1.9;
+  max-width: 600px; margin-bottom: 28px;
+}
+
+/* ═══ DIVIDER ═══ */
+.divider { width: 44px; height: 2px; margin-bottom: 20px; }
+.dv-v { background: linear-gradient(90deg, var(--accent),  transparent); }
+.dv-c { background: linear-gradient(90deg, var(--accent2), transparent); }
+.dv-w { background: linear-gradient(90deg, var(--warm),    transparent); }
+.dv-g { background: linear-gradient(90deg, var(--green),   transparent); }
+.dv-r { background: linear-gradient(90deg, var(--rose),    transparent); }
+
+
+/* ═══════════════════════════════════
+   SLIDE 0 — COVER
+═══════════════════════════════════ */
+.cover-wrap {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  padding: 44px 60px; position: relative;
+  background: linear-gradient(145deg, #09090f 0%, #0d0f1e 60%, #09090f 100%);
+}
+.cover-hdr {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  position: relative; z-index: 1;
+}
+.cover-brand {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: 13px; color: var(--accent); letter-spacing: 1px;
+}
+.cover-tag {
+  font-size: 10px; font-weight: 500; color: var(--text-muted);
+  letter-spacing: 2px; text-transform: uppercase;
+  border: 1px solid var(--border); padding: 5px 13px; border-radius: 20px;
+}
+.cover-body {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  position: relative; z-index: 1; padding: 40px 0 20px;
+}
+.cover-meta { display: flex; gap: 40px; margin-top: 24px; }
+.meta-item label {
+  font-size: 9px; font-weight: 600; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 3px;
+}
+.meta-item span { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+.cover-ftr {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  position: relative; z-index: 1; padding-top: 20px;
+}
+.cover-hint { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; }
+.cover-hint span { color: var(--accent); animation: blink 2s ease-in-out infinite; }
+@keyframes blink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+
+/* ═══════════════════════════════════
+   SLIDE 1 — 自我介紹
+═══════════════════════════════════ */
+.s1-grid {
+  display: grid; grid-template-columns: 1fr 280px;
+  gap: 40px; width: 100%; height: 100%;
+  padding: 52px 76px; align-items: center; position: relative; z-index: 1;
+}
+.s1-roles { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.role-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 13px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.role-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; overflow: hidden;
+}
+.role-icon img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 4px; border-radius: 8px; }
+.ri-v  { background: rgba(139,92,246,0.15); }
+.ri-c  { background: rgba(6,182,212,0.15);  }
+.ri-w  { background: rgba(245,158,11,0.15); }
+.ri-g  { background: rgba(16,185,129,0.15); }
+.role-title { font-weight: 700; font-size: 13.5px; color: var(--text); margin-bottom: 2px; }
+.role-sub   { font-size: 12px; color: var(--text-muted); }
+
+.s1-photo {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: flex-start; gap: 10px;
+}
+.photo-circle-wrap {
+  width: 148px; height: 148px; border-radius: 50%; overflow: hidden;
+  border: 3px solid rgba(139,92,246,0.45);
+  box-shadow: 0 0 0 6px rgba(139,92,246,0.08), 0 8px 28px rgba(139,92,246,0.18);
+  flex-shrink: 0;
+}
+.photo-circle { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.logo-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 7px; width: 100%; margin-top: 2px;
+}
+.logo-slot {
+  background: rgba(255,255,255,0.93); border-radius: 11px; padding: 8px 10px;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 50px; flex-direction: column; gap: 4px;
+}
+.logo-slot img { max-width: 100%; max-height: 32px; object-fit: contain; }
+.logo-slot-label { font-size: 9px; color: #666; letter-spacing: 0.5px; text-align: center; }
+.photo-name {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: 20px; color: var(--text); text-align: center;
+}
+.photo-uni { font-size: 11px; color: var(--text-muted); text-align: center; letter-spacing: 0.5px; }
+
+
+/* ═══════════════════════════════════
+   SLIDE 2a — 處境
+═══════════════════════════════════ */
+.pain-list { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; max-width: 700px; }
+.pain-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 15px 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.pain-num {
+  font-family: 'Inter', monospace; font-size: 10px; font-weight: 700;
+  color: var(--accent2); width: 18px; flex-shrink: 0;
+}
+.pain-q { font-family: var(--font-s); font-size: 14px; color: var(--text); }
+.pain-item.highlight {
+  border-color: rgba(139,92,246,0.28); background: rgba(139,92,246,0.07);
+}
+
+
+/* ═══════════════════════════════════
+   SLIDE 2b — 4管道
+═══════════════════════════════════ */
+.channel-grid {
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 14px; margin-top: 4px;
+}
+.channel-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px 18px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px; text-align: center; position: relative;
+}
+.channel-card.best {
+  border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.08);
+}
+.channel-card.best::before {
+  content: '★ 最有效';
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: #fff;
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  padding: 2px 10px; border-radius: 10px;
+}
+.ch-icon { font-size: 26px; }
+.ch-name { font-weight: 700; font-size: 13px; color: var(--text); }
+.ch-desc { font-size: 11.5px; color: var(--text-muted); line-height: 1.6; }
+.ch-rank { font-family: 'Inter', monospace; font-size: 10px; color: var(--text-dim); }
+.channel-footnote { margin-top: 14px; font-family: var(--font-s); font-size: 12.5px; color: var(--text-dim); }
+.dept-img-row {
+  display: flex; gap: 14px; margin-top: 14px; justify-content: center;
+}
+.dept-img-row img {
+  height: 105px; border-radius: 10px; object-fit: cover;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  cursor: zoom-in; transition: transform 0.2s, box-shadow 0.2s;
+}
+.dept-img-row img:hover { transform: scale(1.03); box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
+
+/* ── LIGHTBOX ── */
+.lightbox {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0,0,0,0.88); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.lightbox.open { opacity: 1; pointer-events: all; }
+.lightbox img {
+  max-width: 88vw; max-height: 88vh;
+  border-radius: 14px; box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  object-fit: contain;
+}
+.lightbox-close {
+  position: absolute; top: 20px; right: 24px;
+  font-size: 28px; color: rgba(255,255,255,0.6);
+  cursor: pointer; background: none; border: none;
+  transition: color 0.2s;
+}
+.lightbox-close:hover { color: #fff; }
+
+
+/* ═══════════════════════════════════
+   SLIDE 3 — STORYTELLING
+═══════════════════════════════════ */
+.timeline-bar {
+  display: flex; align-items: center; gap: 0;
+  margin-top: 36px; width: 100%;
+}
+.tl-node { gap: 10px; }
+.tl-node {
+  display: flex; flex-direction: column; align-items: center; gap: 9px; flex: 1;
+}
+.tl-circle {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg-card); border: 2px solid rgba(245,158,11,0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: var(--warm);
+}
+.tl-circle.now {
+  border-color: rgba(139,92,246,0.5); color: var(--accent);
+}
+.tl-label-t { font-size: 13px; color: var(--text-dim); text-align: center; line-height: 1.4; white-space: nowrap; }
+.tl-line { height: 2px; flex: 1; min-width: 48px; background: rgba(245,158,11,0.25); }
+
+/* Story slide */
+.story-layout {
+  display: grid; grid-template-columns: 185px 1fr;
+  gap: 48px; width: 100%; height: 100%;
+  padding: 52px 76px; align-items: center; position: relative; z-index: 1;
+}
+.story-yr-num {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: 80px; line-height: 1;
+  color: rgba(245,158,11,0.22);
+  -webkit-text-stroke: 3px rgba(245,158,11,0.7);
+  margin-bottom: 4px;
+}
+.story-yr-en  { font-size: 10px; color: var(--warm); letter-spacing: 3px; text-transform: uppercase; font-weight: 600; }
+.story-acts   { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+.story-act    { font-size: 11.5px; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+.story-act::before { content: '·'; color: var(--warm); font-size: 18px; line-height: 0; }
+
+.story-body  { display: flex; flex-direction: column; gap: 18px; }
+.story-text  { font-family: var(--font-s); font-size: 15px; color: var(--text-muted); line-height: 1.9; max-width: 540px; }
+.story-lesson {
+  background: rgba(245,158,11,0.07);
+  border: 1px solid rgba(245,158,11,0.22);
+  border-left: 3px solid var(--warm);
+  border-radius: 0 12px 12px 0; padding: 14px 18px;
+}
+.lesson-tag  { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--warm); margin-bottom: 4px; }
+.lesson-body { font-family: var(--font-d); font-size: 17px; font-weight: 700; color: var(--text); }
+.story-lesson.vari {
+  background: rgba(139,92,246,0.07); border-color: rgba(139,92,246,0.25); border-left-color: var(--accent);
+}
+.story-lesson.vari .lesson-tag { color: var(--accent); }
+
+
+/* ═══════════════════════════════════
+   SLIDE 4 — THREE PATHS
+═══════════════════════════════════ */
+.three-paths {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 16px; margin-top: 6px;
+}
+.path-card {
+  border-radius: 18px; padding: 26px 22px;
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.pc-v { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.22); }
+.pc-c { background: rgba(6,182,212,0.08);  border-color: rgba(6,182,212,0.22);  }
+.pc-w { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.22); }
+
+.path-num  { font-family: 'Inter', monospace; font-size: 9px; font-weight: 700; letter-spacing: 2px; }
+.pn-v { color: var(--accent);  }
+.pn-c { color: var(--accent2); }
+.pn-w { color: var(--warm);    }
+.path-name { font-family: var(--font-d); font-weight: 800; font-size: 20px; color: var(--text); line-height: 1.1; }
+.path-en   { font-size: 10px; letter-spacing: 1px; margin-top: 2px; }
+.pe-v { color: var(--accent);  }
+.pe-c { color: var(--accent2); }
+.pe-w { color: var(--warm);    }
+.path-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.65; }
+.path-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.ptag {
+  font-size: 10.5px; font-weight: 500; padding: 2px 9px;
+  border-radius: 20px; background: rgba(255,255,255,0.05);
+  color: var(--text-muted); border: 1px solid var(--border);
+}
+
+/* Detail slides */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 6px; }
+.detail-block {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px;
+}
+.detail-title {
+  font-weight: 700; font-size: 12.5px; color: var(--text);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.detail-title::before { content: ''; width: 3px; height: 13px; border-radius: 2px; flex-shrink: 0; }
+.dt-v::before { background: var(--accent);  }
+.dt-c::before { background: var(--accent2); }
+.dt-w::before { background: var(--warm);    }
+.role-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.role-list li {
+  font-size: 12.5px; color: var(--text-muted);
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
+}
+.role-list li::before { content: '→'; color: var(--text-dim); font-size: 10px; flex-shrink: 0; margin-top: 3px; }
+.detail-tip {
+  margin-top: 14px; border-radius: 12px; padding: 12px 18px;
+  font-size: 12.5px; color: var(--text-muted);
+}
+.dt-tip-v { background: rgba(139,92,246,0.07); border: 1px solid rgba(139,92,246,0.18); }
+.dt-tip-c { background: rgba(6,182,212,0.07);  border: 1px solid rgba(6,182,212,0.18);  }
+.dt-tip-w { background: rgba(245,158,11,0.07); border: 1px solid rgba(245,158,11,0.18); }
+
+
+/* ═══════════════════════════════════
+   SLIDE 5 — 衡量
+═══════════════════════════════════ */
+.q-list { display: flex; flex-direction: column; gap: 13px; margin-top: 4px; }
+.q-row {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 22px;
+  display: grid; grid-template-columns: 1fr 52px 1fr;
+  align-items: center; gap: 14px;
+}
+.q-opt-l  { display: flex; flex-direction: column; gap: 3px; }
+.q-opt-r  { display: flex; flex-direction: column; gap: 3px; text-align: right; }
+.q-label  { font-weight: 700; font-size: 15px; color: var(--text); }
+.q-desc   { font-size: 11.5px; color: var(--text-muted); }
+.q-vs     { text-align: center; font-weight: 800; font-size: 11px; color: var(--text-dim); letter-spacing: 1px; }
+
+.big-stat {
+  text-align: center; margin-top: 36px; padding: 28px;
+  background: rgba(16,185,129,0.07); border: 1px solid rgba(16,185,129,0.2); border-radius: 20px;
+}
+.big-stat-q {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: clamp(26px, 3.5vw, 40px); color: var(--text);
+  line-height: 1.25; margin-bottom: 14px;
+}
+.big-stat-sub { font-family: var(--font-s); font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+
+
+/* ═══════════════════════════════════
+   SLIDE 6 — AI趨勢
+═══════════════════════════════════ */
+.ai-two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+.ai-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 22px 22px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ai-tag {
+  display: inline-flex; padding: 3px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; align-self: flex-start;
+}
+.at-yes  { background: rgba(16,185,129,0.14);  color: var(--green); border: 1px solid rgba(16,185,129,0.28);  }
+.at-good { background: rgba(139,92,246,0.14);  color: var(--accent); border: 1px solid rgba(139,92,246,0.28); }
+.ai-body { font-family: var(--font-s); font-size: 14px; color: var(--text-muted); line-height: 1.85; }
+.ai-skills { display: flex; flex-direction: column; gap: 10px; }
+.ai-skill { display: flex; align-items: flex-start; gap: 12px; }
+.ai-skill-icon {
+  width: 34px; height: 34px; border-radius: 10px;
+  background: rgba(6,182,212,0.12); display: flex;
+  align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.ai-skill-name { font-weight: 700; font-size: 13px; color: var(--text); margin-bottom: 2px; }
+.ai-skill-desc { font-size: 11.5px; color: var(--text-muted); line-height: 1.5; }
+
+/* Wayne timeline */
+.wayne-tl { display: flex; flex-direction: column; gap: 0; margin-top: 8px; }
+.wt-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding-bottom: 16px; position: relative;
+}
+.wt-item:not(:last-child)::after {
+  content: ''; position: absolute;
+  left: 14px; top: 28px; width: 2px;
+  background: var(--border); height: calc(100% - 12px);
+}
+.wt-dot {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg-card); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+.wt-dot.lit { border-color: rgba(6,182,212,0.5); background: rgba(6,182,212,0.1); }
+.wt-dot.now { border-color: rgba(139,92,246,0.6); background: rgba(139,92,246,0.1); }
+.wt-period { font-size: 10px; font-weight: 700; letter-spacing: 1px; margin-bottom: 2px; }
+.wt-period.c { color: var(--accent2); }
+.wt-period.v { color: var(--accent); }
+.wt-text { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+
+
+/* ═══════════════════════════════════
+   SLIDE 7 — 心態
+═══════════════════════════════════ */
+.mindset-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 4px; }
+.mindset-card {
+  border-radius: 18px; padding: 28px 24px;
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.mc-v { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.2); }
+.mc-c { background: rgba(6,182,212,0.08);  border-color: rgba(6,182,212,0.2);  }
+.mc-badge { font-size: 9px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; }
+.mcb-v { color: var(--accent);  } .mcb-c { color: var(--accent2); }
+.mc-title { font-family: var(--font-d); font-weight: 800; font-size: 22px; color: var(--text); }
+.mc-items { display: flex; flex-direction: column; gap: 8px; }
+.mc-item {
+  font-size: 13px; color: var(--text-muted);
+  display: flex; align-items: flex-start; gap: 8px; line-height: 1.55;
+}
+.mc-item::before { content: '◆'; font-size: 7px; margin-top: 5px; flex-shrink: 0; }
+.mc-item.v::before { color: var(--accent);  }
+.mc-item.c::before { color: var(--accent2); }
+.mc-note { margin-top: 8px; text-align: center; font-family: var(--font-s); font-size: 12.5px; color: var(--text-dim); }
+
+/* Quote slide */
+.quote-wrap {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  justify-content: center; padding: 52px 76px; position: relative; z-index: 1;
+}
+.quote-block { position: relative; }
+.quote-mark {
+  font-family: var(--font-s); font-size: 110px; line-height: 1;
+  color: rgba(244,63,94,0.14); position: absolute; left: -8px; top: -28px;
+  pointer-events: none;
+}
+.quote-text {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: clamp(30px, 4.2vw, 52px); color: var(--text);
+  line-height: 1.2; letter-spacing: -0.5px; position: relative; z-index: 1;
+}
+.quote-sub {
+  font-family: var(--font-s); font-size: 15px;
+  color: var(--text-muted); line-height: 1.85;
+  margin-top: 22px; max-width: 560px;
+}
+
+
+/* ═══════════════════════════════════
+   SLIDE 8 — Q&A
+═══════════════════════════════════ */
+.qa-wrap {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 52px 76px; position: relative; z-index: 1; text-align: center;
+}
+.qa-bg-text {
+  font-family: var(--font-d); font-weight: 800;
+  font-size: clamp(80px, 16vw, 130px); line-height: 1; letter-spacing: -3px;
+  color: transparent; -webkit-text-stroke: 4px rgba(139,92,246,0.5);
+  margin-bottom: 12px;
+}
+.qa-headline { font-family: var(--font-s); font-size: 18px; color: var(--text-muted); line-height: 1.75; margin-bottom: 28px; }
+.qa-contact { font-size: 12px; color: var(--text-dim); letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<div class="key-hint">← → 切換投影片</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">←</button>
+  <div class="nav-dots" id="navDots"></div>
+  <span class="nav-counter" id="counter">1 / 21</span>
+  <button class="nav-btn" id="nextBtn" onclick="navigate(1)">→</button>
+</nav>
+
+<div class="deck" id="deck">
+
+<!-- ═══ SLIDE 0 — COVER ═══ -->
+<section class="slide active">
+  <div class="glow" style="width:700px;height:700px;background:radial-gradient(circle,rgba(139,92,246,0.1) 0%,transparent 70%);top:-150px;right:-150px;"></div>
+  <div class="glow" style="width:450px;height:450px;background:radial-gradient(circle,rgba(6,182,212,0.07) 0%,transparent 70%);bottom:-50px;left:-80px;"></div>
+  <div class="grid-bg"></div>
+  <div class="cover-wrap">
+    <div class="cover-hdr">
+      <div class="cover-brand">高三生涯探索講座</div>
+      <div class="cover-tag">2026.04</div>
+    </div>
+    <div class="cover-body">
+      <div class="eyebrow eb-v">Wayne Tang × 清大計財</div>
+      <div class="h-xl">填完志願<br><span style="color:var(--accent);">之後的事</span></div>
+      <div class="lead">從大學四年的探索，到職涯上的無限可能，<br>寫給每一個正在尋找方向的你。</div>
+      <div class="cover-meta">
+        <div class="meta-item">
+          <label>講者</label>
+          <span>Wayne Tang 唐文謙</span>
+        </div>
+        <div class="meta-item">
+          <label>時長</label>
+          <span>90 分鐘</span>
+        </div>
+        <div class="meta-item">
+          <label>對象</label>
+          <span>得勝者文教</span>
+        </div>
+      </div>
+    </div>
+    <div class="cover-ftr">
+      <div style="font-size:11px;color:var(--text-dim);letter-spacing:1px;">AI 趨勢 · 一類組出路 · 大學探索</div>
+      <div class="cover-hint">按 <span>→</span> 開始</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 1 — 自我介紹 ═══ -->
+<section class="slide">
+  <div class="glow" style="width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 70%);top:50%;right:8%;transform:translateY(-50%);"></div>
+  <div class="grid-bg"></div>
+  <div class="s1-grid">
+    <div>
+      <div class="eyebrow eb-v">01 — 自我介紹</div>
+      <div class="h-lg">我是誰？</div>
+      <div class="divider dv-v"></div>
+      <div class="s1-roles">
+        <div class="role-card">
+          <div class="role-icon"><img src="logos/whoscall_logo.png" alt="Whoscall"></div>
+          <div>
+            <div class="role-title">AI 創新小組負責人</div>
+            <div class="role-sub">Whoscall（Gogolook）</div>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-icon"><img src="logos/XChange_logo.jpeg" alt="XChange"></div>
+          <div>
+            <div class="role-title">投資經理</div>
+            <div class="role-sub">XChange 天使創投</div>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-icon"><img src="logos/nthu_cg.png" alt="清大管顧社"></div>
+          <div>
+            <div class="role-title">共同創辦人 / 校友董事</div>
+            <div class="role-sub">清大管顧社</div>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-icon"><img src="logos/nthu_qf.png" alt="清大計財系學會"></div>
+          <div>
+            <div class="role-title">系學會長</div>
+            <div class="role-sub">清大計量財務金融學系</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="s1-photo">
+      <div class="photo-circle-wrap">
+        <img src="../../02_assets/team/wayne.jpg" class="photo-circle" alt="Wayne Tang">
+      </div>
+      <div class="photo-name">Wayne Tang 唐文謙</div>
+      <div class="photo-uni">清大計量財務金融學系</div>
+      <div class="photo-uni">台北市立松山高級中學</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 2a — 你現在的處境 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="eyebrow eb-c">02 — 填完志願了，然後呢？</div>
+    <div class="h-lg">申請的最後一哩路</div>
+    <div class="divider dv-c"></div>
+    <div class="pain-list">
+      <div class="pain-item">
+        <div class="pain-num">01</div>
+        <div class="pain-q">備審要寫什麼？面試要怎麼準備？</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-num">02</div>
+        <div class="pain-q">我真的認識我填的科系嗎？</div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-num">03</div>
+        <div class="pain-q">讀完這個系之後，我可以做什麼？</div>
+      </div>
+      <div class="pain-item highlight">
+        <div class="pain-num" style="color:var(--accent);">•</div>
+        <div class="pain-q" style="color:var(--text);">在資訊不足的情況下，你需要的其實是<strong>更多的參考資訊以及真實的分享回饋</strong>。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 2b — 4個管道 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="eyebrow eb-c">02 — 認識科系的方式</div>
+    <div class="h-lg">4 個資訊管道</div>
+    <div class="divider dv-c"></div>
+    <div class="channel-grid">
+      <div class="channel-card">
+        <div class="ch-icon">🌐</div>
+        <div class="ch-name">官方網站</div>
+        <div class="ch-desc">課程規劃、師資介紹，了解系所的「官方定位」</div>
+        <div class="ch-rank">效果 ★★☆☆</div>
+      </div>
+      <div class="channel-card">
+        <div class="ch-icon">💬</div>
+        <div class="ch-name">網路分享 / 社群</div>
+        <div class="ch-desc">PTT、Dcard、YouTube 心得，可以看到真實學生觀點</div>
+        <div class="ch-rank">效果 ★★★☆</div>
+      </div>
+      <div class="channel-card">
+        <div class="ch-icon">🤖</div>
+        <div class="ch-name">AI 工具討論</div>
+        <div class="ch-desc">和 ChatGPT 等 AI 對話討論、釐清方向</div>
+        <div class="ch-rank">效果 ★★★☆</div>
+      </div>
+      <div class="channel-card best">
+        <div class="ch-icon">🎓</div>
+        <div class="ch-name">畢業 2–3 年的學長姐</div>
+        <div class="ch-desc">知道「讀完之後真正的出路」，而且正在第一線親身經歷</div>
+        <div class="ch-rank">效果 ★★★★</div>
+      </div>
+    </div>
+    <div class="dept-img-row">
+      <img src="images/qf_domains.png" alt="集四大領域" onclick="openLightbox(this.src)">
+      <img src="images/qf_career.png" alt="計財系學生畢業動態" onclick="openLightbox(this.src)">
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3-intro — 四年總覽 ═══ -->
+<section class="slide">
+  <div class="glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(245,158,11,0.08) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="grid-bg"></div>
+  <div class="slide-inner" style="align-items:center;text-align:center;">
+    <div class="eyebrow eb-w" style="justify-content:center;">03 — 我的清大計財四年</div>
+    <div class="h-xl">四年<span style="color:var(--warm);">探索</span>紀錄</div>
+    <div class="timeline-bar">
+      <div class="tl-node">
+        <div class="tl-circle">一</div>
+        <div class="tl-label-t">享受 & 探索</div>
+      </div>
+      <div class="tl-line"></div>
+      <div class="tl-node">
+        <div class="tl-circle">二</div>
+        <div class="tl-label-t">行動 & 嘗試</div>
+      </div>
+      <div class="tl-line"></div>
+      <div class="tl-node">
+        <div class="tl-circle">三</div>
+        <div class="tl-label-t">建立 & 定位</div>
+      </div>
+      <div class="tl-line"></div>
+      <div class="tl-node">
+        <div class="tl-circle">四</div>
+        <div class="tl-label-t">整合 & 沉澱</div>
+      </div>
+      <div class="tl-line" style="background:rgba(139,92,246,0.2);"></div>
+      <div class="tl-node">
+        <div class="tl-circle now" style="font-size:9px;letter-spacing:1px;">NOW</div>
+        <div class="tl-label-t">持續前進</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3-1 — 大一 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="story-layout">
+    <div>
+      <div class="story-yr-num">大一</div>
+      <div class="story-yr-en">Year 01</div>
+      <div class="story-acts">
+        <div class="story-act">熱舞社</div>
+        <div class="story-act">藍天社</div>
+        <div class="story-act">享受大學生活</div>
+      </div>
+    </div>
+    <div class="story-body">
+      <div class="eyebrow eb-w">03 — 我的清大計財四年</div>
+      <div class="h-md">發現計財系的不同</div>
+      <div class="dept-img-row">
+        <img src="images/freshman_1.png" alt="計財系圖1" onclick="openLightbox(this.src)">
+        <img src="images/freshman_2.png" alt="計財系圖2" onclick="openLightbox(this.src)">
+      </div>
+      <div class="story-text">
+        透過參與社團，認識了各式各樣的學長姐。雖然大家也還在探索、徬徨，但也逐漸有了方向感。
+        <br><br>
+        透過參與各式各樣的社團活動，其實也有助於橫向的理解與探索。
+      </div>
+      <div class="story-lesson">
+        <div class="lesson-tag">這個時期的課題</div>
+        <div class="lesson-body">「探索從第一天就可以開始」</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3-2 — 大二 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="story-layout">
+    <div>
+      <div class="story-yr-num">大二</div>
+      <div class="story-yr-en">Year 02</div>
+      <div class="story-acts">
+        <div class="story-act">系學會長</div>
+        <div class="story-act">競賽 &amp; 實習</div>
+        <div class="story-act">兩次創業嘗試</div>
+      </div>
+    </div>
+    <div class="story-body">
+      <div class="eyebrow eb-w">03 — 我的清大計財四年</div>
+      <div class="h-md">在選擇中學會行動</div>
+      <div class="dept-img-row">
+        <img src="images/yr2_deloitte.png" alt="勤業眾信競賽" onclick="openLightbox(this.src)">
+      </div>
+      <div class="story-text">
+        在舞蹈教學和系學會長之間，我選了系學會長。
+        <br>那一年，我開始參加競賽、研究 AI、區塊鏈，也做了兩次創業嘗試。
+        <br><br>
+        <strong style="color:var(--text);">行動本身是最好的資訊獲取方式，</strong>不需要等到準備好的那天。
+      </div>
+      <div class="story-lesson">
+        <div class="lesson-tag">這個時期的課題</div>
+        <div class="lesson-body">「行動才是獲取資訊的方式」</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3-3 — 大三 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="story-layout">
+    <div>
+      <div class="story-yr-num">大三</div>
+      <div class="story-yr-en">Year 03</div>
+      <div class="story-acts">
+        <div class="story-act">創立管顧社</div>
+        <div class="story-act">跨領域人脈</div>
+        <div class="story-act">開始看清全景</div>
+      </div>
+    </div>
+    <div class="story-body">
+      <div class="eyebrow eb-w">03 — 我的清大計財四年</div>
+      <div class="h-md">建立社群，找到自己的位置</div>
+      <div class="story-text">
+        創立了清大管顧社，開始接觸各領域的同學與學長姐。
+        這讓我第一次看清楚一類組的「全景地圖」——
+        原來可以走的路這麼多，而找到自己的位置比跟著別人走更重要。
+        <br><br>
+        這一年，我開始知道自己<strong style="color:var(--text);">喜歡什麼、擅長什麼、想要什麼。</strong>
+      </div>
+      <div class="story-lesson">
+        <div class="lesson-tag">這個時期的課題</div>
+        <div class="lesson-body">「先探索，再找自己的位置」</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3-4 — 大四 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="story-layout">
+    <div>
+      <div class="story-yr-num">大四</div>
+      <div class="story-yr-en">Year 04</div>
+      <div class="story-acts">
+        <div class="story-act">XChange 區塊鏈輔導組</div>
+        <div class="story-act">台大 × BCG 課程</div>
+        <div class="story-act">整合沉澱期</div>
+      </div>
+    </div>
+    <div class="story-body">
+      <div class="eyebrow eb-w">03 — 我的清大計財四年</div>
+      <div class="h-md">整合，停止隨意探索</div>
+      <div class="dept-img-row">
+        <img src="images/moonkat_group.png" alt="Moonkat 團隊" onclick="openLightbox(this.src)">
+      </div>
+      <div class="story-text">
+        大四是沉澱的一年——我開啟了第三次的創業，並且把過去三年的經歷整合。
+        <br><br>
+        兩次創業的經歷、管理顧問的策略與商業規劃、區塊鏈的研究，這次我們獲得了投資，並且有機會全力去闖。
+      </div>
+      <div class="story-lesson">
+        <div class="lesson-tag">這個時期的課題</div>
+        <div class="lesson-body">「整合，比繼續探索更重要」</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 3-5 — 現在 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="story-layout">
+    <div>
+      <div class="story-yr-num" style="-webkit-text-stroke: 3px rgba(139,92,246,0.7); color: rgba(139,92,246,0.15);">NOW</div>
+      <div class="story-yr-en" style="color:var(--accent);">Present</div>
+      <div class="story-acts">
+        <div class="story-act" style="color:rgba(139,92,246,0.6);">PM @ Whoscall</div>
+        <div class="story-act" style="color:rgba(139,92,246,0.6);">投資經理 @ XChange</div>
+        <div class="story-act" style="color:rgba(139,92,246,0.6);">打造自己的產品</div>
+      </div>
+    </div>
+    <div class="story-body">
+      <div class="eyebrow eb-v">03 — 現在的我</div>
+      <div class="h-md">探索的結果，<span style="color:var(--accent);">還在繼續</span></div>
+      <div class="story-text">
+        現在的我，同時是公司的<strong style="color:var(--text);">產品經理</strong>、
+        XChange 的<strong style="color:var(--text);">投資經理</strong>，
+        同時也在打造自己的產品持續探索。
+      </div>
+      <div class="dept-img-row">
+        <img src="images/now_pickleball.png" alt="現在" onclick="openLightbox(this.src)">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4-0 — 三條路總覽 ═══ -->
+<section class="slide">
+  <div class="glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(139,92,246,0.07) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="eyebrow eb-v">04 — 一類組三條路</div>
+    <div class="h-lg">一類組的本質</div>
+    <div style="font-family:var(--font-s);font-size:14px;color:var(--text-muted);margin-bottom:4px;">
+      發現問題 → 解決問題 → 創造價值
+    </div>
+    <div class="divider dv-v"></div>
+    <div class="three-paths">
+      <div class="path-card pc-v">
+        <div class="path-num pn-v">路徑 01</div>
+        <div>
+          <div class="path-name">Business<br>Generalist</div>
+          <div class="path-en pe-v">企業通才路線</div>
+        </div>
+        <div class="path-desc">推動事情發生的人，整合資源、做決策、讓組織前進</div>
+        <div class="path-tags">
+          <span class="ptag">產品經理</span>
+          <span class="ptag">專案經理</span>
+          <span class="ptag">行銷</span>
+          <span class="ptag">銷售</span>
+          <span class="ptag">策略</span>
+          <span class="ptag">顧問</span>
+          <span class="ptag">人資</span>
+        </div>
+      </div>
+      <div class="path-card pc-c">
+        <div class="path-num pn-c">路徑 02</div>
+        <div>
+          <div class="path-name">Domain<br>Specific</div>
+          <div class="path-en pe-c">領域專才路線</div>
+        </div>
+        <div class="path-desc">在特定領域深耕，成為該領域不可或缺的專家</div>
+        <div class="path-tags">
+          <span class="ptag">財金</span>
+          <span class="ptag">法律</span>
+          <span class="ptag">精算</span>
+          <span class="ptag">心理諮商</span>
+        </div>
+      </div>
+      <div class="path-card pc-w">
+        <div class="path-num pn-w">路徑 03</div>
+        <div>
+          <div class="path-name">Builder /<br>Creator</div>
+          <div class="path-en pe-w">創造者路線</div>
+        </div>
+        <div class="path-desc">從零打造產品、事業，建立個人影響力</div>
+        <div class="path-tags">
+          <span class="ptag">創業</span>
+          <span class="ptag">自媒體</span>
+          <span class="ptag">個人品牌</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4-A — Business Generalist ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner top">
+    <div class="eyebrow eb-v">04 — 路徑 01</div>
+    <div class="h-lg" style="font-size:38px;">Business <span style="color:var(--accent);">Generalist</span></div>
+    <div style="font-family:var(--font-s);font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+      推動事情發生的人 —— 讓組織往前走的各種角色
+    </div>
+    <div class="detail-grid">
+      <div class="detail-block">
+        <div class="detail-title dt-v">決策 &amp; 整合型</div>
+        <ul class="role-list">
+          <li><strong>產品 / 專案經理</strong> — 做決策、整合資源，讓產品或專案往前走</li>
+          <li><strong>策略 / 商業分析師</strong> — 幫公司分析現狀、規劃未來方向</li>
+          <li><strong>Consultant</strong> — 進到不同公司幫他們解決問題</li>
+        </ul>
+      </div>
+      <div class="detail-block">
+        <div class="detail-title dt-v">執行 &amp; 成長型</div>
+        <ul class="role-list">
+          <li><strong>Marketing</strong> — 讓產品被看見、讓品牌被記住</li>
+          <li><strong>Sales / BD</strong> — 把東西賣出去、建立合作關係</li>
+          <li><strong>Operation</strong> — 讓事情順起來（含會計、行政）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="detail-tip dt-tip-v">
+      💡 核心競爭力：<strong style="color:var(--text);">溝通 × 框架思維 × 快速學習</strong>，跨產業流動性高
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4-B — Domain Specific ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner top">
+    <div class="eyebrow eb-c">04 — 路徑 02</div>
+    <div class="h-lg" style="font-size:38px;">Domain <span style="color:var(--accent2);">Specific</span></div>
+    <div style="font-family:var(--font-s);font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+      在特定領域深耕，讓專業成為護城河
+    </div>
+    <div class="detail-grid">
+      <div class="detail-block">
+        <div class="detail-title dt-c">財金相關</div>
+        <ul class="role-list">
+          <li><strong>買方</strong>（創投 / 私募）vs <strong>賣方</strong>（投行 / 券商）</li>
+          <li><strong>一級市場</strong>：創投、PE，投資未上市公司</li>
+          <li><strong>二級市場</strong>：Trader、基金經理，各類標的操作</li>
+          <li><strong>縱向發展</strong>：精算師、財務分析師（CFA）</li>
+        </ul>
+      </div>
+      <div class="detail-block">
+        <div class="detail-title dt-c">其他領域</div>
+        <ul class="role-list">
+          <li><strong>法律</strong> — 律師、法務，各專業領域皆有</li>
+          <li><strong>數據分析</strong> — Data Analyst、Data Scientist</li>
+          <li><strong>人資 / 組織發展</strong> — HRBP、OD</li>
+          <li><strong>心理師</strong> — 臨床心理師、諮商心理師</li>
+        </ul>
+      </div>
+    </div>
+    <div class="detail-tip dt-tip-c">
+      💡 核心競爭力：<strong style="color:var(--text);">專業深度 × 持續學習 × 資格認證</strong>，越深越難被取代
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 4-C — Builder / Creator ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner top">
+    <div class="eyebrow eb-w">04 — 路徑 03</div>
+    <div class="h-lg" style="font-size:38px;">Builder / <span style="color:var(--warm);">Creator</span></div>
+    <div style="font-family:var(--font-s);font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+      從零打造東西——產品、事業，或個人影響力
+    </div>
+    <div class="detail-grid">
+      <div class="detail-block">
+        <div class="detail-title dt-w">創業者 / 產品打造</div>
+        <ul class="role-list">
+          <li><strong>創業者</strong> — 從 0 到 1 打造公司或服務</li>
+          <li><strong>Product Manager</strong> — 在公司裡扮演創業者的角色</li>
+          <li><strong>Side Project</strong> — 業餘時間打造自己的產品</li>
+          <li><strong>投資 / VC</strong> — 支持別人創業、投資未來</li>
+        </ul>
+      </div>
+      <div class="detail-block">
+        <div class="detail-title dt-w">個人品牌 / 創作者</div>
+        <ul class="role-list">
+          <li><strong>KOL / 創作者</strong> — 建立個人影響力和內容</li>
+          <li><strong>獨立顧問</strong> — 以個人品牌接案</li>
+          <li><strong>社群經營</strong> — 打造有影響力的社群</li>
+          <li><strong>知識型創業</strong> — 寫作、課程、Newsletter</li>
+        </ul>
+      </div>
+    </div>
+    <div class="detail-tip dt-tip-w">
+      💡 核心競爭力：<strong style="color:var(--text);">執行力 × 產品思維 × 承受不確定性的能力</strong>，回報最大、波動也最大
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 5-1 — 三個問題 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="eyebrow eb-g">05 — 怎麼衡量自己適合哪條？</div>
+    <div class="h-lg">問自己三個問題</div>
+    <div class="divider dv-g"></div>
+    <div class="q-list">
+      <div class="q-row">
+        <div class="q-opt-l">
+          <div class="q-label">人</div>
+          <div class="q-desc">喜歡和人溝通協作、推動事情</div>
+        </div>
+        <div class="q-vs">VS</div>
+        <div class="q-opt-r">
+          <div class="q-label">系統</div>
+          <div class="q-desc">喜歡分析數字、鑽研規則與結構</div>
+        </div>
+      </div>
+      <div class="q-row">
+        <div class="q-opt-l">
+          <div class="q-label">廣</div>
+          <div class="q-desc">喜歡接觸不同領域、扮演整合者</div>
+        </div>
+        <div class="q-vs">VS</div>
+        <div class="q-opt-r">
+          <div class="q-label">深</div>
+          <div class="q-desc">喜歡在特定領域成為真正的專家</div>
+        </div>
+      </div>
+      <div class="q-row">
+        <div class="q-opt-l">
+          <div class="q-label">高風險 / 高報酬</div>
+          <div class="q-desc">願意承受不確定性，追求高報酬</div>
+        </div>
+        <div class="q-vs">VS</div>
+        <div class="q-opt-r">
+          <div class="q-label">穩定可預期</div>
+          <div class="q-desc">需要結構感、可預期的成長路徑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 5-2 — 不是要你現在選對 ═══ -->
+<section class="slide">
+  <div class="glow" style="width:650px;height:650px;background:radial-gradient(circle,rgba(16,185,129,0.09) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="grid-bg"></div>
+  <div class="quote-wrap">
+    <div class="eyebrow eb-g" style="margin-bottom:28px;">05 — 怎麼衡量？</div>
+    <div class="quote-block">
+      <div class="quote-mark">"</div>
+      <div class="quote-text">
+        不是要你<span style="color:var(--green);">現在選對</span>，<br>
+        而是要你<span style="color:var(--green);">開始試</span>。
+      </div>
+    </div>
+    <div class="quote-sub">
+      大學四年就是最低成本的試錯場。<br>
+      你不需要在 18 歲就決定人生方向——<br>
+      你只需要<strong style="color:var(--text);">帶著好奇心，去試，去修正。</strong>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 6-1 — AI趨勢 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="eyebrow eb-c">06 — AI 趨勢下的你</div>
+    <div class="h-lg">一類組會被 AI 影響嗎？</div>
+    <div class="divider dv-c"></div>
+    <div class="ai-two">
+      <div class="ai-card">
+        <div class="ai-tag at-yes">會，但方向是好的</div>
+        <div class="ai-body">
+          AI 確實會影響很多一類組的傳統工作——
+          但影響的方向是讓你<strong style="color:var(--text);">可以做到更多</strong>，而不是讓你消失。
+          <br><br>
+          被影響最多的，是<strong style="color:var(--text);">不願意學習新工具</strong>的人。<br>
+          最受益的，是<strong style="color:var(--text);">最快吸收、最快適應</strong>的人。
+        </div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-tag at-good">AI 時代的關鍵能力</div>
+        <div class="ai-skills">
+          <div class="ai-skill">
+            <div class="ai-skill-icon">📡</div>
+            <div>
+              <div class="ai-skill-name">資訊吸收力</div>
+              <div class="ai-skill-desc">快速理解新事物，辨別訊號與雜訊</div>
+            </div>
+          </div>
+          <div class="ai-skill">
+            <div class="ai-skill-icon">🔄</div>
+            <div>
+              <div class="ai-skill-name">適應力</div>
+              <div class="ai-skill-desc">在不確定的環境中快速學習、調整</div>
+            </div>
+          </div>
+          <div class="ai-skill">
+            <div class="ai-skill-icon">🧭</div>
+            <div>
+              <div class="ai-skill-name">判斷力</div>
+              <div class="ai-skill-desc">在 AI 給出答案後，知道該問什麼問題</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 6-2 — Wayne 的案例 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="eyebrow eb-c">06 — AI 趨勢 / Wayne 的案例</div>
+    <div class="h-lg" style="font-size:34px;">每個時期的積累，<br>都是 <span style="color:var(--accent2);">AI 的燃料</span></div>
+    <div class="divider dv-c"></div>
+    <div class="wayne-tl">
+      <div class="wt-item">
+        <div class="wt-dot lit">⛓</div>
+        <div>
+          <div class="wt-period c">區塊鏈時期（大二）</div>
+          <div class="wt-text">在新興技術起飛時快速入場，鍛鍊了<strong style="color:var(--text);">資訊敏銳度</strong>和在不確定中行動的能力</div>
+        </div>
+      </div>
+      <div class="wt-item">
+        <div class="wt-dot lit">📊</div>
+        <div>
+          <div class="wt-period c">管顧時期（大三）</div>
+          <div class="wt-text">透過管理顧問的框架，建立了<strong style="color:var(--text);">商業策略思維</strong>和問題結構化的能力</div>
+        </div>
+      </div>
+      <div class="wt-item">
+        <div class="wt-dot lit">🚀</div>
+        <div>
+          <div class="wt-period c">創業時期（大四 + 畢業後）</div>
+          <div class="wt-text">從 0 到 1 打造產品，建立了<strong style="color:var(--text);">Product Sense</strong> 和對用戶需求的直覺</div>
+        </div>
+      </div>
+      <div class="wt-item">
+        <div class="wt-dot now">🤖</div>
+        <div>
+          <div class="wt-period v">AI 加乘（現在）</div>
+          <div class="wt-text">帶領 Whoscall <strong style="color:var(--text);">AI 創新事業單位</strong>——前三個時期的積累，成為了 AI 時代最好的燃料</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 7-1 — 心態建議 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner">
+    <div class="eyebrow eb-r">07 — 心態建議</div>
+    <div class="h-lg">認識自己 × 認識世界</div>
+    <div class="divider dv-r"></div>
+    <div class="mindset-duo">
+      <div class="mindset-card mc-v">
+        <div class="mc-badge mcb-v">對內</div>
+        <div class="mc-title">認識自己</div>
+        <div class="mc-items">
+          <div class="mc-item v">你喜歡什麼？什麼事情讓你停不下來？</div>
+          <div class="mc-item v">你擅長什麼？別人常常找你幫什麼忙？</div>
+          <div class="mc-item v">你要什麼？穩定？高成長？影響力？自由？</div>
+          <div class="mc-item v">你最害怕什麼？那通常也是你最在乎的</div>
+        </div>
+      </div>
+      <div class="mindset-card mc-c">
+        <div class="mc-badge mcb-c">對外</div>
+        <div class="mc-title">認識世界</div>
+        <div class="mc-items">
+          <div class="mc-item c">主動接觸不同領域的人，聽他們在做什麼</div>
+          <div class="mc-item c">了解市場在發生什麼事，趨勢往哪裡走</div>
+          <div class="mc-item c">嘗試各種不同的事，收集第一手的感受</div>
+          <div class="mc-item c">找到你欣賞的人，觀察他們怎麼做決定</div>
+        </div>
+      </div>
+    </div>
+    <div class="mc-note">
+      → 這兩件事需要<strong style="color:var(--text);">同時進行</strong>，互相校正——光認識自己不夠，光認識世界也不夠
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 7-2 — 積極的迷惘人 ═══ -->
+<section class="slide">
+  <div class="glow" style="width:700px;height:700px;background:radial-gradient(circle,rgba(244,63,94,0.09) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="grid-bg"></div>
+  <div class="quote-wrap">
+    <div class="eyebrow eb-r" style="margin-bottom:28px;">07 — 心態建議</div>
+    <div class="quote-block">
+      <div class="quote-mark">"</div>
+      <div class="quote-text">
+        做一個<br><span style="color:var(--rose);">積極的迷惘人</span>
+      </div>
+    </div>
+    <div class="quote-sub">
+      <strong style="color:var(--text);">迷惘代表你在乎</strong>——這是好事，代表你認真看待現在的選擇。
+      <br><br>
+      但關鍵不是等到不迷惘了才行動。<br>
+      而是<strong style="color:var(--text);">帶著迷惘去收集資訊、去嘗試、去迭代。</strong>
+      <br><br>
+      期待大家都可以活出屬於自己的大學生活，和屬於自己的人生。
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 8 — Q&A ═══ -->
+<section class="slide">
+  <div class="glow" style="width:800px;height:800px;background:radial-gradient(circle,rgba(139,92,246,0.09) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+  <div class="grid-bg"></div>
+  <div class="qa-wrap">
+    <div class="qa-bg-text">Q&amp;A</div>
+    <div class="qa-headline">
+      有任何問題都歡迎提問——<br>
+      不管是關於科系、職涯、大學生活，或者純粹好奇心驅使
+    </div>
+    <div class="qa-contact">Wayne Tang · waynetang89@gmail.com</div>
+  </div>
+</section>
+
+</div><!-- /.deck -->
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const counter = document.getElementById('counter');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const dotsEl  = document.getElementById('navDots');
+let cur = 0;
+
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur = Math.max(0, Math.min(n, slides.length - 1));
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  counter.textContent = (cur + 1) + ' / ' + slides.length;
+  prevBtn.disabled = cur === 0;
+  nextBtn.disabled = cur === slides.length - 1;
+}
+
+function navigate(dir) { goTo(cur + dir); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); navigate(1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'                    ) { e.preventDefault(); navigate(-1); }
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End')  goTo(slides.length - 1);
+});
+
+goTo(0);
+
+// ── LIGHTBOX ──
+function openLightbox(src) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lbImg" src="" alt="" onclick="event.stopPropagation()">
+</div>
+</body>
+</html>
