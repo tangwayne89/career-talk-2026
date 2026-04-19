@@ -589,6 +589,9 @@ html, body {
 }
 .qa-headline { font-family: var(--font-s); font-size: 18px; color: var(--text-muted); line-height: 1.75; margin-bottom: 28px; }
 .qa-contact { font-size: 12px; color: var(--text-dim); letter-spacing: 0.5px; }
+.qa-qr { margin-top: 28px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.qa-qr canvas { border-radius: 12px; box-shadow: 0 4px 24px rgba(139,92,246,0.25); }
+.qa-qr-label { font-size: 11px; color: var(--text-dim); letter-spacing: 0.5px; }
 </style>
 </head>
 <body>
@@ -1339,6 +1342,10 @@ html, body {
       不管是關於科系、職涯、大學生活，或者純粹好奇心驅使
     </div>
     <div class="qa-contact">Wayne Tang · waynetang89@gmail.com</div>
+    <div class="qa-qr">
+      <canvas id="qrCanvas"></canvas>
+      <div class="qa-qr-label">career-talk-2026.vercel.app</div>
+    </div>
   </div>
 </section>
 
@@ -1398,5 +1405,12 @@ document.addEventListener('keydown', e => {
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
   <img id="lbImg" src="" alt="" onclick="event.stopPropagation()">
 </div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script>
+QRCode.toCanvas(document.getElementById('qrCanvas'), 'https://career-talk-2026.vercel.app/', {
+  width: 160, margin: 2,
+  color: { dark: '#1e1b4b', light: '#ffffff' }
+});
+</script>
 </body>
 </html>
