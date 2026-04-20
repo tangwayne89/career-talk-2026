@@ -349,19 +349,31 @@ html, body {
 /* ═══════════════════════════════════
    SLIDE 2c — 備審 & 面試
 ═══════════════════════════════════ */
-.tip-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; width: 100%; }
-.tip-list { display: flex; flex-direction: column; gap: 10px; }
-.tip-item {
+.thesis-banner {
+  background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 10px; padding: 12px 20px; margin-bottom: 16px;
+  font-family: var(--font-s); font-size: 15px; color: var(--text);
+  display: flex; align-items: center; gap: 12px;
+}
+.thesis-banner::before { content: '✦'; color: var(--accent); font-size: 14px; flex-shrink: 0; }
+.pillar-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+.pillar-card {
   background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 12px; padding: 13px 16px;
-  display: flex; align-items: flex-start; gap: 12px;
+  border-radius: 14px; padding: 20px 18px;
+  display: flex; flex-direction: column; gap: 8px;
 }
-.tip-item.tip-summary {
-  border-color: rgba(6,182,212,0.35); background: rgba(6,182,212,0.07);
+.pillar-num {
+  font-family: 'Inter', monospace; font-size: 10px; font-weight: 700;
+  color: var(--accent2); letter-spacing: 2px;
 }
-.tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-.tip-title { font-weight: 700; font-size: 13px; color: var(--text); margin-bottom: 3px; }
-.tip-desc { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+.pillar-title { font-weight: 800; font-size: 15px; color: var(--text); }
+.pillar-body { font-size: 12.5px; color: var(--text-muted); line-height: 1.75; }
+.tip-sum-bar {
+  background: rgba(6,182,212,0.07); border: 1px solid rgba(6,182,212,0.3);
+  border-radius: 10px; padding: 12px 20px; margin-top: 14px;
+  font-size: 12.5px; color: var(--text-muted); line-height: 1.7;
+}
+.tip-sum-bar strong { color: var(--accent2); }
 
 
 /* ═══════════════════════════════════
@@ -839,53 +851,26 @@ html, body {
     <div class="eyebrow eb-c">02 — 備審 &amp; 面試</div>
     <div class="h-lg">備審資料與面試小訣竅</div>
     <div class="divider dv-c"></div>
-    <div class="tip-cols">
-      <div class="tip-list">
-        <div class="tip-item">
-          <div class="tip-icon">🎯</div>
-          <div>
-            <div class="tip-title">對症下藥：研究教授的研究主題</div>
-            <div class="tip-desc">深入了解後，基於你對該主題的理解，陳述你感興趣、想學習的原因</div>
-          </div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-icon">❓</div>
-          <div>
-            <div class="tip-title">回答三個關鍵問題</div>
-            <div class="tip-desc">你是不是真的想來？&emsp;你是不是真的適合？&emsp;你進來之後能帶來什麼產出（研究 / 比賽 / 聲譽）？</div>
-          </div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-icon">📝</div>
-          <div>
-            <div class="tip-title">行為證據 &gt; 興趣宣言</div>
-            <div class="tip-desc">不只寫興趣，也要有具體行為佐證。現在開始創造的行為證據也算數！</div>
-          </div>
-        </div>
+    <div class="thesis-banner">真誠的積極性，是面試和備審最注重的方向</div>
+    <div class="pillar-grid">
+      <div class="pillar-card">
+        <div class="pillar-num">01 — 深入了解</div>
+        <div class="pillar-title">🔍 研究科系與教授</div>
+        <div class="pillar-body">找到目標科系教授的研究主題，深入了解，並基於你的理解陳述你感興趣、想學習的原因</div>
       </div>
-      <div class="tip-list">
-        <div class="tip-item">
-          <div class="tip-icon">✂️</div>
-          <div>
-            <div class="tip-title">客製化備審，提高每份的勝率</div>
-            <div class="tip-desc">如果時間允許，針對每間學校和科系調整備審內容，展現真誠的用心</div>
-          </div>
-        </div>
-        <div class="tip-item">
-          <div class="tip-icon">🚶</div>
-          <div>
-            <div class="tip-title">走訪系館，熟悉環境</div>
-            <div class="tip-desc">多去走走、參觀系館，除了熟悉環境，也增加面試時可以真誠分享的經驗</div>
-          </div>
-        </div>
-        <div class="tip-item tip-summary">
-          <div class="tip-icon">✨</div>
-          <div>
-            <div class="tip-title" style="color:var(--accent2);">總而言之</div>
-            <div class="tip-desc">先針對科系做研究，拉出有具體行為的個人主軸，再客製化履歷以表用心</div>
-          </div>
-        </div>
+      <div class="pillar-card">
+        <div class="pillar-num">02 — 自身連結</div>
+        <div class="pillar-title">🔗 故事與動機</div>
+        <div class="pillar-body">可以與你既有的人生故事做連結，也可以現在開始創造；讓動機有根據、有脈絡，而不只是一句「我很有興趣」</div>
       </div>
+      <div class="pillar-card">
+        <div class="pillar-num">03 — 具體行動</div>
+        <div class="pillar-title">🎬 行動比興趣更有說服力</div>
+        <div class="pillar-body">看過什麼書、參加過什麼講座、聽過什麼分享、訪談過哪些學長姐或家中長輩，都是強而有力的行動證據</div>
+      </div>
+    </div>
+    <div class="tip-sum-bar">
+      <strong>總而言之</strong>：先針對科系做研究，拉出有具體行為的個人主軸，再客製化履歷以表用心——回答教授心中的三個問題：<strong>你是不是真的想來？你是不是真的適合？你進來之後能帶來什麼產出？</strong>
     </div>
   </div>
 </section>
