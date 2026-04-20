@@ -347,6 +347,24 @@ html, body {
 
 
 /* ═══════════════════════════════════
+   SLIDE 2c — 備審 & 面試
+═══════════════════════════════════ */
+.tip-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 4px; width: 100%; }
+.tip-list { display: flex; flex-direction: column; gap: 10px; }
+.tip-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 13px 16px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.tip-item.tip-summary {
+  border-color: rgba(6,182,212,0.35); background: rgba(6,182,212,0.07);
+}
+.tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.tip-title { font-weight: 700; font-size: 13px; color: var(--text); margin-bottom: 3px; }
+.tip-desc { font-size: 12px; color: var(--text-muted); line-height: 1.7; }
+
+
+/* ═══════════════════════════════════
    SLIDE 3 — STORYTELLING
 ═══════════════════════════════════ */
 .timeline-bar {
@@ -810,6 +828,64 @@ html, body {
     <div class="dept-img-row">
       <img src="images/qf_domains.png" alt="集四大領域" onclick="openLightbox(this.src)">
       <img src="images/qf_career.png" alt="計財系學生畢業動態" onclick="openLightbox(this.src)">
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 2c — 備審 & 面試 ═══ -->
+<section class="slide">
+  <div class="grid-bg"></div>
+  <div class="slide-inner top">
+    <div class="eyebrow eb-c">02 — 備審 &amp; 面試</div>
+    <div class="h-lg">備審資料與面試小訣竅</div>
+    <div class="divider dv-c"></div>
+    <div class="tip-cols">
+      <div class="tip-list">
+        <div class="tip-item">
+          <div class="tip-icon">🎯</div>
+          <div>
+            <div class="tip-title">對症下藥：研究教授的研究主題</div>
+            <div class="tip-desc">深入了解後，基於你對該主題的理解，陳述你感興趣、想學習的原因</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">❓</div>
+          <div>
+            <div class="tip-title">回答三個關鍵問題</div>
+            <div class="tip-desc">你是不是真的想來？&emsp;你是不是真的適合？&emsp;你進來之後能帶來什麼產出（研究 / 比賽 / 聲譽）？</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">📝</div>
+          <div>
+            <div class="tip-title">行為證據 &gt; 興趣宣言</div>
+            <div class="tip-desc">不只寫興趣，也要有具體行為佐證。現在開始創造的行為證據也算數！</div>
+          </div>
+        </div>
+      </div>
+      <div class="tip-list">
+        <div class="tip-item">
+          <div class="tip-icon">✂️</div>
+          <div>
+            <div class="tip-title">客製化備審，提高每份的勝率</div>
+            <div class="tip-desc">如果時間允許，針對每間學校和科系調整備審內容，展現真誠的用心</div>
+          </div>
+        </div>
+        <div class="tip-item">
+          <div class="tip-icon">🚶</div>
+          <div>
+            <div class="tip-title">走訪系館，熟悉環境</div>
+            <div class="tip-desc">多去走走、參觀系館，除了熟悉環境，也增加面試時可以真誠分享的經驗</div>
+          </div>
+        </div>
+        <div class="tip-item tip-summary">
+          <div class="tip-icon">✨</div>
+          <div>
+            <div class="tip-title" style="color:var(--accent2);">總而言之</div>
+            <div class="tip-desc">先針對科系做研究，拉出有具體行為的個人主軸，再客製化履歷以表用心</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
