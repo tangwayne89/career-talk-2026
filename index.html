@@ -248,6 +248,23 @@ html, body {
 }
 .photo-uni { font-size: 11px; color: var(--text-muted); text-align: center; letter-spacing: 0.5px; }
 
+/* ═══════════════════════════════════
+   SLIDE 1b — 高中的我
+═══════════════════════════════════ */
+.s1b-imgs {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 20px;
+}
+.s1b-imgs img {
+  width: 170px; height: 170px; object-fit: contain;
+  border-radius: 16px; background: rgba(255,255,255,0.9);
+  border: 1px solid var(--border); cursor: pointer;
+  padding: 10px;
+  box-shadow: 0 4px 20px rgba(139,92,246,0.15);
+  transition: transform 0.2s;
+}
+.s1b-imgs img:hover { transform: scale(1.04); }
+
 
 /* ═══════════════════════════════════
    SLIDE 2a — 處境
@@ -691,6 +708,39 @@ html, body {
       <div class="photo-name">Wayne Tang 唐文謙</div>
       <div class="photo-uni">清大計量財務金融學系</div>
       <div class="photo-uni">台北市立松山高級中學</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SLIDE 1b — 高中的我 ═══ -->
+<section class="slide">
+  <div class="glow" style="width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 70%);top:50%;right:8%;transform:translateY(-50%);"></div>
+  <div class="grid-bg"></div>
+  <div class="s1-grid">
+    <div>
+      <div class="eyebrow eb-v">01 — 我是誰</div>
+      <div class="h-lg">高中的我</div>
+      <div class="divider dv-v"></div>
+      <div class="s1-roles">
+        <div class="role-card">
+          <div class="role-icon ri-v">🎸</div>
+          <div>
+            <div class="role-title">松山高中 光影吉他社</div>
+            <div class="role-sub">第 28 屆社員</div>
+          </div>
+        </div>
+        <div class="role-card">
+          <div class="role-icon ri-c">📋</div>
+          <div>
+            <div class="role-title">不能申請繁星的後段班</div>
+            <div class="role-sub">成績不理想，走上了個人申請這條路</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="s1b-imgs">
+      <img src="images/guitar_club_1.png" alt="光影吉他社" onclick="openLightbox(this.src)">
+      <img src="images/guitar_club_2.png" alt="光影吉他社" onclick="openLightbox(this.src)">
     </div>
   </div>
 </section>
